@@ -11,42 +11,6 @@ pipeline {
     stages {
 
 
-        stage('Build Docker Images') {
-            steps {
-                script {
-                    def services = [
-                        'profile-service',
-                        'task-service',
-                        'todo-fe',
-                        'auth-service',
-                    ]
-                    services.each { service ->
-                        docker.build("${registry}/${service}:${dockerImageTag}", "./${service}")
-                    }
-                }
-            }
-        }
-
-        stage('Upload Images') {
-            steps {
-                script {
-                    def services = [
-                        'profile-service',
-                        'task-service',
-                        'todo-fe',
-                        'auth-service',
-                    ]
-                    services.each { service ->
-                        def dockerImage = docker.build("${registry}/${service}:${dockerImageTag}", "./${service}")
-                        docker.withRegistry('', registryCredential) {
-                            dockerImage.push("${dockerImageTag}")
-                            dockerImage.push('latest')
-                        }
-                    }
-                }
-            }
-        }
-
          stage('Deploy to Minikube') {
                     steps {
                         script {
@@ -57,7 +21,7 @@ pipeline {
                         }
                     }
                 }
-    }
+          }
 
     post {
         success {
