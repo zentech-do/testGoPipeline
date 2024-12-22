@@ -55,6 +55,16 @@ pipeline {
                 }
             }
         }
+         stage('Deploy to Minikube') {
+                    steps {
+                        script {
+                            // Kiểm tra kết nối tới Minikube và deploy ứng dụng
+                            bat """
+                            kubectl apply -f k8s/infrastructure/namespace.yaml
+                            """
+                        }
+                    }
+                }
     }
 
     post {
