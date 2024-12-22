@@ -46,15 +46,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy with Docker Compose') {
-            steps {
-                script {
-                    bat """
-                        docker compose up -d
-                    """
-                }
-            }
-        }
+
          stage('Deploy to Minikube') {
                     steps {
                         script {
