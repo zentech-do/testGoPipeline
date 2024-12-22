@@ -11,17 +11,21 @@ pipeline {
     stages {
 
 
-         stage('Deploy to Minikube') {
-                    steps {
-                        script {
-                            // Kiểm tra kết nối tới Minikube và deploy ứng dụng
-                            bat """
-                            kubectl apply -f k8s/infrastructure/namespace.yaml
-                            """
-                        }
-                    }
-                }
-          }
+         stage('Deploy to Kubernetes') {
+                     steps {
+                         withCredentials([
+                             file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')
+                         ]) {
+                             script {
+                                 // Cấu hình biến môi trường cho kubectl
+                                 bat'''
+                                 kubectl apply -f k8s/infrastructure/namespace.yaml
+                                                               '''
+                             }
+                         }
+                     }
+         }
+    }
 
     post {
         success {
