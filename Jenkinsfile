@@ -33,7 +33,7 @@ pipeline {
                     def services = [
                         'auth-service',
                         'profile-service',
-                        'task-server',
+                        'task-service',
                         'todo-fe'
                     ]
 
