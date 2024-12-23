@@ -44,7 +44,7 @@ pipeline {
                                 -Dsonar.projectName=${service} \
                                 -Dsonar.projectVersion=1.0 \
                                 -Dsonar.sources=./${service} \
-                                -Dsonar.language=go"
+                                -Dsonar.go.coverage.reportPaths=coverage.out"
                         }
                     }
                 }
