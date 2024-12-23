@@ -5,7 +5,7 @@ pipeline {
         registry = "asdloc098l"
         registryCredential = 'dockerhub'
         dockerImageTag = 'latest'
-        scannerHome = tool 'sonarqube'
+        scannerHome = tool 'sonarqube-scanner'
     }
 
     stages {
@@ -38,7 +38,7 @@ pipeline {
                     ]
 
                     services.each { service ->
-                        withSonarQubeEnv('sonarqube') {
+                        withSonarQubeEnv('sonarqube-server') {
                             sh "${scannerHome}/bin/sonar-scanner \
                                 -Dsonar.projectKey=${service} \
                                 -Dsonar.projectName=${service} \
