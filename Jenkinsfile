@@ -3,34 +3,105 @@ pipeline {
 
     environment {
         registry = "asdloc098l"
-        registryCredential = 'dockerhub-nhom17'
+        registryCredential = 'dockerhub'
         dockerImageTag = 'latest'
-        //scannerHome = tool 'sonarqube'
+        scannerHome = tool 'sonarqube'
     }
 
     stages {
 
+        stage('Build') {
+            steps {
+                script {
+                    def services = [
+                        'auth-service',
+                        'profile-service',
+                        'task-server',
+                        'todo-fe'
+                    ]
 
-         stage('Deploy to Kubernetes') {
-                     steps {
-                         withCredentials([
-                             file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')
-                         ]) {
-                             script {
-                                 // Cấu hình biến môi trường cho kubectl
-                                 bat'''
-                                 kubectl apply -f k8s/infrastructure/namespace.yaml
-                                                               '''
-                             }
-                         }
-                     }
-         }
+                    services.each { service ->
+                        sh "cd ${service} && go build -o main ."
+                    }
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def services = [
+                        'auth-service',
+                        'profile-service',
+                        'task-server',
+                        'todo-fe'
+                    ]
+
+                    services.each { service ->
+                        withSonarQubeEnv('sonarqube') {
+                            sh "${scannerHome}/bin/sonar-scanner \
+                                -Dsonar.projectKey=${service} \
+                                -Dsonar.projectName=${service} \
+                                -Dsonar.projectVersion=1.0 \
+                                -Dsonar.sources=./${service} \
+                                -Dsonar.language=go"
+                        }
+                    }
+                }
+            }
+        }
+
+//         stage('Build Docker Images') {
+//             steps {
+//                 script {
+//                     def services = [
+//                         'auth-service',
+//                         'profile-service',
+//                         'task-server',
+//                         'todo-fe'
+//                     ]
+//
+//                     services.each { service ->
+//                         def dockerImage = docker.build("${registry}/${service}:${dockerImageTag}", "./${service}")
+//                     }
+//                 }
+//             }
+//         }
+//
+//         stage('Upload Images') {
+//             steps {
+//                 script {
+//                     def services = [
+//                         'auth-service',
+//                         'profile-service',
+//                         'task-server',
+//                         'todo-fe'
+//                     ]
+//
+//                     services.each { service ->
+//                         def dockerImage = docker.build("${registry}/${service}:${dockerImageTag}", "./${service}")
+//                         docker.withRegistry('', registryCredential) {
+//                             dockerImage.push("${dockerImageTag}")
+//                             dockerImage.push('latest')
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+
+//         stage('Deploy with Docker Compose') {
+//             steps {
+//                 script {
+//                     sh "docker compose up -d"
+//                 }
+//             }
+//         }
     }
 
     post {
         success {
             echo 'Pipeline executed successfully.'
-            echo 'All stages completed successfully: Build, Docker Image Build, Image Upload, and Docker Compose Deployment.'
+            echo 'All stages completed successfully: Build, SonarQube Analysis, Docker Image Build, Image Upload, and Docker Compose Deployment.'
         }
         failure {
             echo 'Pipeline failed during execution.'
