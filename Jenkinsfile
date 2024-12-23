@@ -10,22 +10,22 @@ pipeline {
 
     stages {
 
-        stage('Build') {
-            steps {
-                script {
-                    def services = [
-                        'auth-service',
-                        'profile-service',
-                        'task-server',
-                        'todo-fe'
-                    ]
-
-                    services.each { service ->
-                        sh "cd ${service} && go build -o main ."
-                    }
-                }
-            }
-        }
+//         stage('Build') {
+//             steps {
+//                 script {
+//                     def services = [
+//                         'auth-service',
+//                         'profile-service',
+//                         'task-server',
+//                         'todo-fe'
+//                     ]
+//
+//                     services.each { service ->
+//                         sh "cd ${service} && go build -o main ."
+//                     }
+//                 }
+//             }
+//         }
 
         stage('SonarQube Analysis') {
             steps {
