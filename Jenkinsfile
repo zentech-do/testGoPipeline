@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-
-    }
+    agent any
 
     environment {
         registry = "asdloc098l"
