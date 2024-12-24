@@ -51,51 +51,43 @@ pipeline {
             }
         }
 
-//         stage('Build Docker Images') {
-//             steps {
-//                 script {
-//                     def services = [
-//                         'auth-service',
-//                         'profile-service',
-//                         'task-server',
-//                         'todo-fe'
-//                     ]
-//
-//                     services.each { service ->
-//                         def dockerImage = docker.build("${registry}/${service}:${dockerImageTag}", "./${service}")
-//                     }
-//                 }
-//             }
-//         }
-//
-//         stage('Upload Images') {
-//             steps {
-//                 script {
-//                     def services = [
-//                         'auth-service',
-//                         'profile-service',
-//                         'task-server',
-//                         'todo-fe'
-//                     ]
-//
-//                     services.each { service ->
-//                         def dockerImage = docker.build("${registry}/${service}:${dockerImageTag}", "./${service}")
-//                         docker.withRegistry('', registryCredential) {
-//                             dockerImage.push("${dockerImageTag}")
-//                             dockerImage.push('latest')
-//                         }
-//                     }
-//                 }
-//             }
-//         }
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    def services = [
+                        'auth-service',
+                        'profile-service',
+                        'task-service',
+                        'todo-fe'
+                    ]
 
-//         stage('Deploy with Docker Compose') {
-//             steps {
-//                 script {
-//                     sh "docker compose up -d"
-//                 }
-//             }
-//         }
+                    services.each { service ->
+                        def dockerImage = docker.build("${registry}/${service}:${dockerImageTag}", "./${service}")
+                    }
+                }
+            }
+        }
+
+        stage('Upload Images') {
+            steps {
+                script {
+                    def services = [
+                        'auth-service',
+                        'profile-service',
+                        'task-service',
+                        'todo-fe'
+                    ]
+
+                    services.each { service ->
+                        def dockerImage = docker.build("${registry}/${service}:${dockerImageTag}", "./${service}")
+                        docker.withRegistry('', registryCredential) {
+                            dockerImage.push("${dockerImageTag}")
+                            dockerImage.push('latest')
+                        }
+                    }
+                }
+            }
+        }
     }
 
     post {
