@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+
+    }
 
     environment {
         registry = "asdloc098l"
@@ -63,6 +65,23 @@ pipeline {
 
                     services.each { service ->
                         def dockerImage = docker.build("${registry}/${service}:${dockerImageTag}", "./${service}")
+                    }
+                }
+            }
+        }
+
+        stage('Trivy Security Scan') {
+            steps {
+                script {
+                    def services = [
+                        'auth-service',
+                        'profile-service',
+                        'task-service',
+                        'todo-fe'
+                    ]
+
+                    services.each { service ->
+                        sh "trivy image --exit-code 1 --severity HIGH,CRITICAL ${registry}/${service}:${dockerImageTag}"
                     }
                 }
             }
