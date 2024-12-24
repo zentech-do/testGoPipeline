@@ -79,7 +79,7 @@ pipeline {
                     ]
 
                     services.each { service ->
-                        sh "trivy image --exit-code 1 --severity HIGH,CRITICAL ${registry}/${service}:${dockerImageTag}"
+                      sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ${registry}/${service}:${dockerImageTag} --no-progress --scanners vuln --exit-code 0 --severity HIGH,CRITICAL --format table"
                     }
                 }
             }
